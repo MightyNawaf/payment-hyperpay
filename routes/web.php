@@ -22,3 +22,4 @@ Route::get('/', function () {
 Route::post('/prepareCheckout', [App\Http\Controllers\PaymentController::class, 'prepareCheckout']);
 Route::get('form', [App\Http\Controllers\PaymentController::class, 'form']);
 Route::get('payment-status', [App\Http\Controllers\PaymentController::class, 'payment_status']);
+Route::post('check-payment-status', [App\Http\Controllers\PaymentController::class, 'check_payment_status']);

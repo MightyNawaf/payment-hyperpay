@@ -25,7 +25,16 @@ class PaymentController extends Controller
     
     public function payment_status(Request $request)
     {
+        return view('finalize', [
+            'id' => $request->get('id'),
+            'resourcePath' => $request->get('resourcePath')
+        ]);
+    }
+    public function check_payment_status(Request $request)
+    {
         $resourcePath = $request->get('resourcePath');
         $checkout_id = $request->get('id');
-        return LaravelHyperpay::paymentStatus($resourcePath, $checkout_id);    }
+        return LaravelHyperpay::paymentStatus($resourcePath, $checkout_id);
+    }
+
 }
