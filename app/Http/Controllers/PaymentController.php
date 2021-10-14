@@ -15,7 +15,7 @@ class PaymentController extends Controller
         $user = User::first();
         $amount = 10;
         $brand = $request->get('brand'); // MASTER OR MADA
-        LaravelHyperpay::addBilling(new HyperPayBilling())->checkout($trackable_data, $user, $amount, $brand, $request);
+        // LaravelHyperpay::addBilling(new HyperPayBilling())->checkout($trackable_data, $user, $amount, $brand, $request);
         return LaravelHyperpay::checkout($trackable_data, $user, $amount, $brand, $request);
     }
     public function form()
@@ -25,6 +25,7 @@ class PaymentController extends Controller
     
     public function payment_status(Request $request)
     {
-       return $request->all();
-    }
+        $resourcePath = $request->get('resourcePath');
+        $checkout_id = $request->get('id');
+        return LaravelHyperpay::paymentStatus($resourcePath, $checkout_id);    }
 }

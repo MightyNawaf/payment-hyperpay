@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/prepareCheckout', function (Request $request) {
-    return view('welcome');
-});
-Route::post('prepareCheckout', [App\Http\Controllers\PaymentController::class, 'prepareCheckout']);
+// Route::get('/prepareCheckout', function (Request $request) {
+//     return view('welcome');
+// });
+Route::post('/prepareCheckout', [App\Http\Controllers\PaymentController::class, 'prepareCheckout']);
 Route::get('form', [App\Http\Controllers\PaymentController::class, 'form']);
 Route::get('payment-status', [App\Http\Controllers\PaymentController::class, 'payment_status']);

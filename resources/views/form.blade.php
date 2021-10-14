@@ -12,7 +12,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700&display=swap" rel="stylesheet">
-</head>
+    <script>
+        
+</script>
 
 <style>
      body {
@@ -176,13 +178,45 @@
                 </div>
             </div>
             <div class="m-4 flex mt-10 min-h-payment-form relative" dir="ltr" id="hyperpay-form">
-                
+                <div class="absolute flex items-center bg-white justify-center inset-0 z-10" v-if="hyPayPayFormLoading">
+                    <svg width="60" height="15" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg" fill="#E5E7EB">
+                        <circle cx="15" cy="15" r="15">
+                            <animate attributeName="r" from="15" to="15"
+                                    begin="0s" dur="0.8s"
+                                    values="15;9;15" calcMode="linear"
+                                    repeatCount="indefinite" />
+                            <animate attributeName="fill-opacity" from="1" to="1"
+                                    begin="0s" dur="0.8s"
+                                    values="1;.5;1" calcMode="linear"
+                                    repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="60" cy="15" r="9" fill-opacity="0.3">
+                            <animate attributeName="r" from="9" to="9"
+                                    begin="0s" dur="0.8s"
+                                    values="9;15;9" calcMode="linear"
+                                    repeatCount="indefinite" />
+                            <animate attributeName="fill-opacity" from="0.5" to="0.5"
+                                    begin="0s" dur="0.8s"
+                                    values=".5;1;.5" calcMode="linear"
+                                    repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="105" cy="15" r="15">
+                            <animate attributeName="r" from="15" to="15"
+                                    begin="0s" dur="0.8s"
+                                    values="15;9;15" calcMode="linear"
+                                    repeatCount="indefinite" />
+                            <animate attributeName="fill-opacity" from="1" to="1"
+                                    begin="0s" dur="0.8s"
+                                    values="1;.5;1" calcMode="linear"
+                                    repeatCount="indefinite" />
+                        </circle>
+                    </svg>
+                </div>
             </div>
         </div>
     </div>
-</body>
-<script>
-    var wpwlOptions = null;
+    <script>
+        var wpwlOptions = null;
         var app = new Vue({
             el: '#app',
             data: {
@@ -193,9 +227,10 @@
                 brands: [],
                 brand: 'VISA_MASTER',
                 hyPayPayFormLoading: true,
+                
             },
-                methods:{
-                    getForm (redirect_url, paymentType) {
+            methods: {
+                getForm (redirect_url, paymentType) {
                     return `<form
                     id="paymentWidgets"
                     class="paymentWidgets"
@@ -203,12 +238,19 @@
                     data-brands="${paymentType}"
                 ></form>`
                 },
-                   prepareCheckout() {
+                setPaymentGateway (brand) {
+                    this.brand = brand
+                },
+                getFormToken() {
                     axios.post('/prepareCheckout', {
-                            brand: 'VISA'
-                        }
-                    ).then(({data}) => {
-                        // this.setBrands();
+                            brand:(this.brand == 'VISA_MASTER') ? 'VISA' : this.brand
+                        },
+                        {
+                        headers: {
+                                'ek-current-fqdn': 'main.ekliel.net'
+                            }
+                    }).then(({data}) => {
+                        this.setBrands();
                         this.removeFormAndScript();
                         const paymentWrapper = document.createElement( "div" );
                         paymentWrapper.setAttribute("id", "parent_paymentWidgets");
@@ -229,11 +271,40 @@
                     scriptTag.setAttribute('id', 'hyperpay_script')
                     document.head.appendChild(scriptTag)
                 },
+                setBrands () {
+                    if (this.brand == 'VISA_MASTER') {
+                        this.paymentType = 'VISA MASTER'
+                    }
+                    
+                    if (this.brand == 'MADA') {
+                        this.paymentType = 'MADA'
+                    }
                 },
-                mounted(){
-                    this.prepareCheckout()
-
-                    wpwlOptions = {
+                removeFormAndScript () {
+                   var  paymentWidgets = document.getElementById('parent_paymentWidgets');
+                   var  paymentScript = document.getElementById('hyperpay_script')
+                   if(paymentWidgets) {
+                       paymentWidgets.remove();
+                   }
+                   if (paymentScript) {
+                       paymentScript.remove();
+                   }
+                }
+            },
+            watch: {
+                brand: function(val, oldVal) {
+                    console.log('val --->',val, this.brand)
+                    if(this.brand !== oldVal) {
+                        console.log('val --->',oldVal)
+                        this.hyPayPayFormLoading = true
+                        this.getFormToken()
+                    }
+                }
+            },
+            mounted() {
+                this.getFormToken()
+                
+                 wpwlOptions = {
                     locale: "ar",
                     style: "card",
                     brandDetection: true,
@@ -271,9 +342,8 @@
                         }
                     }
                 }
-
-                },
-            });
-            
-</script>
+            }
+        })
+    </script>
+</body>
 </html>
